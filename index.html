@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<title>Bored Games</title>
+		<script src="/jquery-1.6.4.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+	</head>
+	<body>
+		<h1>Chat</h1>
+		<input type="text" id="test-txt"></input>
+		<button id="test-btn">Send!</button>
+
+		<pre id="test-div"></pre>
+		<script>
+		  var socket = io.connect('http://localhost:8080');
+
+		  $("#test-btn").click(function() {
+				socket.emit('message', $("#test-txt").val());
+			});
+
+		  socket.on('message', function (data) {
+				$("#test-div").text($("#test-div").text() + "\n" + data);
+		  });
+		</script>
+	</body>
+</html>
