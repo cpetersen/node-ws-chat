@@ -1,18 +1,24 @@
-var app = require('express').createServer()
-  , io = require('socket.io').listen(app);
+var express = require('express'); 
+var app = express.createServer(); 
+var io = require('socket.io').listen(app);
 
 app.listen(8080);
 
-app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/index.html');
+app.configure('development', function(){
+    app.use(express.static(__dirname + '/public'));
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
-app.get('/jquery-1.6.4.min.js', function (req, res) {
-  res.sendfile(__dirname + '/jquery-1.6.4.min.js');
+
+app.configure('production', function(){
+  var oneYear = 31557600000;
+  app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
+  app.use(express.errorHandler());
 });
 
 io.sockets.on('connection', function (socket) {
   socket.on('message', function (data) {
     console.log(data);
 	  socket.emit('message', data);
+	  socket.broadcast.emit('message', data);
   });
 });
